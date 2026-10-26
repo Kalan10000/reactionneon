@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Neon</title>
+    <!-- Tailwind CSS pour le style et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Orbitron & Rajdhani -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+        }
+
+        .font-digital {
+            font-family: 'Orbitron', monospace;
+        }
+
+        .neon-glow-green {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .neon-text-green {
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.8), 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .neon-glow-red {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5), 0 0 40px rgba(220, 38, 38, 0.3);
+        }
+
+        .neon-text-red {
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(220, 38, 38, 0.5);
+        }
+
+        /* Animation d'onde au clic */
+        .click-ripple {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: rippleAnim 0.5s linear;
+        }
+
+        @keyframes rippleAnim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Personnalisation de la barre de défilement du classement */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="h-full w-full bg-slate-950 text-slate-100 flex flex-col justify-between relative overflow-hidden">
+
+    <!-- ARRIÈRE-PLAN AVEC GRILLE DÉCORATIVE -->
+    <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
+
+    <!-- HAUT : BARRE NAVIGATION / ENTÊTE AVEC BOUTON RÉESSAYER PERMANENT -->
+    <header class="relative z-30 w-full max-w-5xl mx-auto pt-4 px-4 sm:px-6 flex justify-between items-center">
+        <!-- Logo / Titre du jeu -->
+        <div class="flex items-center gap-2 sm:gap-3 cursor-pointer" onclick="goToMenu()">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <i class="fa-solid fa-bolt text-lg sm:text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-digital font-bold text-sm sm:text-base tracking-wider text-slate-100 uppercase leading-none">REACTION <span class="text-emerald-400">NEON</span></h1>
+                <span class="text-[10px] text-slate-400">Test de vitesse réflexe</span>
+            </div>
+        </div>
+
+        <!-- Actions supérieures : BOUTON RÉESSAYER PERMANENT + Classement -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- BOUTON RÉESSAYER PERMANENT DANS L'EN-TÊTE -->
+            <button id="btnHeaderRetry" onclick="restartGame(event)" class="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold text-xs sm:text-sm flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-emerald-500/10">
+                <i class="fa-solid fa-rotate-right text-emerald-400"></i>
+                <span class="font-bold font-digital">RÉESSAYER</span>
+            </button>
+
+            <!-- Bouton Classement -->
+            <button onclick="openLeaderboardModal()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-slate-300 hover:text-emerald-400 text-xs sm:text-sm flex items-center gap-2 transition-colors" title="Classement">
+                <i class="fa-solid fa-trophy text-amber-400"></i>
+                <span class="hidden sm:inline font-medium">Classement</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ZONE DE JEU PRINCIPALE DE RÉACTION -->
+    <main id="reactionZone" onclick="handleZoneClick(event)" class="relative flex-1 w-full h-full my-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 select-none overflow-hidden">
+        
+        <!-- ÉCRAN : MENU D'ACCUEIL -->
+        <div id="screenMenu" class="z-20 text-center max-w-lg mx-auto p-6 bg-slate-900/90 rounded-3xl border border-slate-800 shadow-2xl neon-glow-green space-y-6">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400 text-3xl shadow-lg">
+                <i class="fa-solid fa-stopwatch"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h2 class="text-3xl sm:text-4xl font-black font-digital text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 neon-text-green">
+                    TEST DE RÉFLEXE
+                </h2>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    1. Cliquez sur <strong class="text-emerald-400">COMMENCER</strong>.<br>
+                    2. Attendez le décompte <strong class="text-amber-400">3, 2, 1</strong>.<br>
+                    3. Dès que l'écran devient <strong class="text-emerald-400 uppercase">VERT FLUO</strong>, cliquez le plus vite possible !
+                </p>
+            </div>
+
+            <div class="pt-2 flex flex-col gap-3">
+                <button onclick="startCountdown(event)" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-slate-950 font-extrabold text-xl tracking-wider font-digital shadow-xl hover:shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                    C'EST PARTI ! <i class="fa-solid fa-play ml-2 text-base"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ÉCRAN : DÉCOMPTE 3, 2, 1 -->
+        <div id="screenCountdown" class="hidden z-20 text-center space-y-4">
+            <div id="countdownNumber" class="font-digital text-8xl sm:text-9xl font-black text-amber-400 neon-text-green animate-bounce">
+                3
+            </div>
+            <p class="text-slate-400 font-medium text-lg uppercase tracking-widest font-digital">Préparez-vous...</p>
+        </div>
+
+        <!-- ÉCRAN : ATTENTE DU SIGNAL VERT (ROUGE / ROUGE SOMBRE) -->
+        <div id="screenWaiting" class="hidden z-20 text-center space-y-3 pointer-events-none">
+            <i class="fa-solid fa-hourglass-half text-amber-400 text-5xl animate-spin"></i>
+            <h2 class="font-digital text-3xl sm:text-4xl font-bold text-slate-200">ATTENDEZ LE VERT...</h2>
+            <p class="text-slate-400 text-sm">Ne cliquez pas encore !</p>
+        </div>
+
+        <!-- ÉCRAN : SIGNAL VERT (SIGNAL DE CLIC) -->
+        <div id="screenGreen" class="hidden z-20 text-center space-y-2 pointer-events-none">
+            <h2 class="font-digital text-5xl sm:text-7xl font-black text-slate-950 tracking-wider animate-pulse">
+                CLIQUEZ MAINTENANT !
+            </h2>
+        </div>
+
+        <!-- ÉCRAN : FAUX DÉPART (CLIC PRÉMATURÉ) -->
+        <div id="screenEarly" class="hidden z-20 text-center max-w-md mx-auto p-6 bg-slate-900/90 rounded-3xl border border-rose-500/40 shadow-2xl neon-glow-red space-y-5">
+            <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-500 text-3xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="font-digital text-2xl font-bold text-rose-400 neon-text-red">FAUX DÉPART !</h3>
+                <p class="text-slate-300 text-sm">Vous avez cliqué trop tôt avant le signal vert.</p>
+            </div>
+            <!-- BOUTON RÉESSAYER SUR L'ÉCRAN DE FAUX DÉPART -->
+            <button onclick="startCountdown(event)" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white font-bold font-digital tracking-wider text-base shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                <i class="fa-solid fa-rotate-right mr-2"></i> RÉESSAYER IMMÉDIATEMENT
+            </button>
+        </div>
+
+        <!-- ÉCRAN : RÉSULTAT DU TEMPS DE RÉACTION -->
+        <div id="screenResult" class="hidden z-20 text-center max-w-md mx-auto p-6 sm:p-8 bg-slate-900/95 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+            <div class="space-y-1">
+                <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400 font-digital">Temps de Réaction</span>
+                <div id="reactionTimeDisplay" class="font-digital text-5xl sm:text-6xl font-black text-amber-300 neon-text-green">
+                    0 ms
+                </div>
+                <p id="performanceFeedback" class="text-xs text-slate-400 pt-1 font-medium"></p>
+            </div>
+
+            <!-- Formulaire d'enregistrement du pseudo -->
+            <form id="scoreForm" onsubmit="saveScore(event)" class="space-y-4 text-left">
+                <div class="space-y-1.5">
+                    <label for="playerName" class="text-xs font-semibold uppercase text-slate-300 tracking-wider">Entrez votre pseudo :</label>
+                    <input type="text" id="playerName" maxlength="15" placeholder="Ex: EclairNeon" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-slate-100 placeholder-slate-600 outline-none transition-all font-medium">
+                </div>
+
+                <div class="flex gap-2.5 pt-1">
+                    <!-- BOUTON RÉESSAYER BIEN VISIBLE SUR L'ÉCRAN RÉSULTAT -->
+                    <button type="button" onclick="startCountdown(event)" class="w-1/2 py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold font-digital text-xs sm:text-sm border border-emerald-500/30 transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> Réessayer
+                    </button>
+                    <button type="submit" class="w-1/2 py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold font-digital text-xs sm:text-sm shadow-lg transition-all">
+                        Enregistrer <i class="fa-solid fa-check ml-1"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- FOOTER INFORMATIONS ET ACCÈS CLASSEMENT -->
+    <footer class="relative z-30 w-full max-w-5xl mx-auto pb-4 px-6 flex justify-between items-center text-xs text-slate-500">
+        <div>Reaction Neon • Chrono haute précision</div>
+        <div class="flex items-center gap-4">
+            <button onclick="goToMenu()" class="hover:text-slate-300 transition-colors">Accueil</button>
+            <button onclick="openLeaderboardModal()" class="hover:text-slate-300 transition-colors">Classement Top 100</button>
+        </div>
+    </footer>
+
+    <!-- MODAL CLASSEMENT -->
+    <div id="leaderboardModal" class="hidden absolute inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col max-h-[85vh]">
+            <!-- En-tête de la modale -->
+            <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                        <i class="fa-solid fa-trophy text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold font-digital text-slate-100">Classement Réflexe</h3>
+                        <p class="text-xs text-slate-400">Meilleurs temps de réaction (ms)</p>
+                    </div>
+                </div>
+                <button onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Liste des scores -->
+            <div class="flex-1 overflow-y-auto pr-1">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs uppercase text-slate-400 border-b border-slate-800/80 pb-2">
+                            <th class="py-2 px-2">#</th>
+                            <th class="py-2 px-2">Joueur</th>
+                            <th class="py-2 px-2 text-right">Temps</th>
+                            <th class="py-2 px-2 text-right">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody" class="divide-y divide-slate-800/50 text-sm">
+                        <!-- Généré via JS -->
+                    </tbody>
+                </table>
+                
+                <div id="emptyLeaderboard" class="hidden py-12 text-center text-slate-500 space-y-2">
+                    <i class="fa-regular fa-folder-open text-3xl"></i>
+                    <p class="text-sm">Aucun score enregistré pour l'instant.</p>
+                </div>
+            </div>
+
+            <!-- Pied de page de la modale -->
+            <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between gap-3">
+                <button onclick="clearLeaderboard()" class="px-3 py-2 text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-colors border border-rose-500/20">
+                    <i class="fa-solid fa-trash-can mr-1"></i> Réinitialiser
+                </button>
+                <button onclick="closeLeaderboardModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl transition-colors">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIQUE JAVASCRIPT DU JEU -->
+    <script>
+        // ETATS DU JEU
+        const STATE = {
+            MENU: 'MENU',
+            COUNTDOWN: 'COUNTDOWN',
+            WAITING: 'WAITING',
+            READY: 'READY',
+            EARLY: 'EARLY',
+            RESULT: 'RESULT'
+        };
+
+        let currentState = STATE.MENU;
+        let countdownValue = 3;
+        let countdownTimer = null;
+        let greenDelayTimeout = null;
+        let startTime = 0;
+        let lastReactionTimeMs = 0;
+
+        // ELEMENTS DOM
+        const reactionZone = document.getElementById('reactionZone');
+        const screenMenu = document.getElementById('screenMenu');
+        const screenCountdown = document.getElementById('screenCountdown');
+        const screenWaiting = document.getElementById('screenWaiting');
+        const screenGreen = document.getElementById('screenGreen');
+        const screenEarly = document.getElementById('screenEarly');
+        const screenResult = document.getElementById('screenResult');
+        
+        const countdownNumber = document.getElementById('countdownNumber');
+        const reactionTimeDisplay = document.getElementById('reactionTimeDisplay');
+        const performanceFeedback = document.getElementById('performanceFeedback');
+        const playerNameInput = document.getElementById('playerName');
+        
+        const leaderboardModal = document.getElementById('leaderboardModal');
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        const emptyLeaderboard = document.getElementById('emptyLeaderboard');
+
+        /**
+         * Réinitialise les timers en cours
+         */
+        function clearAllTimers() {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            if (greenDelayTimeout) {
+                clearTimeout(greenDelayTimeout);
+                greenDelayTimeout = null;
+            }
+        }
+
+        /**
+         * Masque tous les écrans intérieurs
+         */
+        function hideAllScreens() {
+            screenMenu.classList.add('hidden');
+            screenCountdown.classList.add('hidden');
+            screenWaiting.classList.add('hidden');
+            screenGreen.classList.add('hidden');
+            screenEarly.classList.add('hidden');
+            screenResult.classList.add('hidden');
+        }
+
+        /**
+         * Change le style de fond de la zone de jeu
+         */
+        function setZoneBackground(type) {
+            reactionZone.className = "relative flex-1 w-full h-full my-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden ";
+            
+            if (type === 'green') {
+                reactionZone.className += "bg-emerald-400 text-slate-950";
+            } else if (type === 'red') {
+                reactionZone.className += "bg-rose-950/80 text-white";
+            } else if (type === 'waiting') {
+                reactionZone.className += "bg-slate-900/60 text-white";
+            } else {
+                reactionZone.className += "bg-transparent text-white";
+            }
+        }
+
+        /**
+         * Retour au menu principal
+         */
+        function goToMenu() {
+            clearAllTimers();
+            currentState = STATE.MENU;
+            setZoneBackground('default');
+            hideAllScreens();
+            screenMenu.classList.remove('hidden');
+        }
+
+        /**
+         * Lance / Relance la tentative avec le décompte 3, 2, 1
+         * Accessible TOUT LE TEMPS via le bouton RÉESSAYER
+         */
+        function restartGame(e) {
+            if (e) e.stopPropagation();
+            startCountdown(e);
+        }
+
+        function startCountdown(e) {
+            if (e) e.stopPropagation();
+            clearAllTimers();
+
+            currentState = STATE.COUNTDOWN;
+            countdownValue = 3;
+            countdownNumber.textContent = countdownValue;
+
+            setZoneBackground('default');
+            hideAllScreens();
+            screenCountdown.classList.remove('hidden');
+
+            // Animation et intervalle du décompte
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                if (countdownValue > 0) {
+                    countdownNumber.textContent = countdownValue;
+                } else {
+                    clearInterval(countdownTimer);
+                    countdownTimer = null;
+                    startWaitingPhase();
+                }
+            }, 800);
+        }
+
+        /**
+         * Phase d'attente aléatoire avant le vert
+         */
+        function startWaitingPhase() {
+            currentState = STATE.WAITING;
+            hideAllScreens();
+            setZoneBackground('waiting');
+            screenWaiting.classList.remove('hidden');
+
+            // Délai aléatoire entre 1.5s (1500ms) et 4s (4000ms)
+            const randomDelay = Math.floor(Math.random() * 2500) + 1500;
+
+            greenDelayTimeout = setTimeout(() => {
+                triggerGreenSignal();
+            }, randomDelay);
+        }
+
+        /**
+         * Déclenchement de l'écran vert de réaction
+         */
+        function triggerGreenSignal() {
+            currentState = STATE.READY;
+            startTime = performance.now(); // Précision haute définition millisecondes
+            hideAllScreens();
+            setZoneBackground('green');
+            screenGreen.classList.remove('hidden');
+        }
+
+        /**
+         * Gestion des clics sur la zone de jeu
+         */
+        function handleZoneClick(e) {
+            // Effet d'onde visuel au clic
+            createClickRipple(e);
+
+            if (currentState === STATE.WAITING) {
+                // Clic prématuré -> Faux départ
+                clearAllTimers();
+                currentState = STATE.EARLY;
+                setZoneBackground('red');
+                hideAllScreens();
+                screenEarly.classList.remove('hidden');
+            } else if (currentState === STATE.READY) {
+                // Clic au bon moment ! Calcul de la vitesse
+                const endTime = performance.now();
+                lastReactionTimeMs = Math.round(endTime - startTime);
+                
+                currentState = STATE.RESULT;
+                setZoneBackground('default');
+                hideAllScreens();
+                
+                // Affichage du résultat
+                reactionTimeDisplay.textContent = `${lastReactionTimeMs} ms`;
+                
+                // Commentaire selon la vitesse
+                if (lastReactionTimeMs < 180) {
+                    performanceFeedback.textContent = "⚡ Réflexes de surhumain ! Incroyable !";
+                    performanceFeedback.className = "text-xs font-bold text-emerald-400";
+                } else if (lastReactionTimeMs < 250) {
+                    performanceFeedback.textContent = "🚀 Excellent temps ! Très rapide !";
+                    performanceFeedback.className = "text-xs font-bold text-teal-300";
+                } else if (lastReactionTimeMs < 350) {
+                    performanceFeedback.textContent = "👍 Bon temps ! Dans la moyenne rapide.";
+                    performanceFeedback.className = "text-xs font-medium text-amber-300";
+                } else {
+                    performanceFeedback.textContent = "🐢 Un peu lent ! Vous pouvez faire mieux !";
+                    performanceFeedback.className = "text-xs font-medium text-slate-400";
+                }
+
+                screenResult.classList.remove('hidden');
+                setTimeout(() => playerNameInput.focus(), 100);
+            }
+        }
+
+        /**
+         * Animation d'onde au clic
+         */
+        function createClickRipple(e) {
+            if (!e.clientX) return;
+            const circle = document.createElement('div');
+            circle.className = 'click-ripple';
+            const rect = reactionZone.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            circle.style.width = circle.style.height = `${size}px`;
+            circle.style.left = `${e.clientX - rect.left - size / 2}px`;
+            circle.style.top = `${e.clientY - rect.top - size / 2}px`;
+            reactionZone.appendChild(circle);
+
+            setTimeout(() => circle.remove(), 500);
+        }
+
+        /**
+         * Sauvegarde du score dans LocalStorage
+         */
+        function saveScore(e) {
+            e.preventDefault();
+            const name = playerNameInput.value.trim() || 'Anonyme';
+
+            // Date & Heure automatique
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const scoreEntry = {
+                name: name,
+                time: lastReactionTimeMs,
+                date: dateStr
+            };
+
+            let leaderboard = JSON.parse(localStorage.getItem('reaction_neon_scores') || '[]');
+            leaderboard.push(scoreEntry);
+
+            // Tri par temps croissant (les plus rapides en premier)
+            leaderboard.sort((a, b) => a.time - b.time);
+
+            // Conserver le Top 100
+            leaderboard = leaderboard.slice(0, 100);
+
+            localStorage.setItem('reaction_neon_scores', JSON.stringify(leaderboard));
+
+            playerNameInput.value = '';
+            openLeaderboardModal();
+        }
+
+        /**
+         * Affichage du tableau des scores
+         */
+        function openLeaderboardModal() {
+            renderLeaderboard();
+            leaderboardModal.classList.remove('hidden');
+        }
+
+        function closeLeaderboardModal() {
+            leaderboardModal.classList.add('hidden');
+        }
+
+        function renderLeaderboard() {
+            const leaderboard = JSON.parse(localStorage.getItem('reaction_neon_scores') || '[]');
+            leaderboardBody.innerHTML = '';
+
+            if (leaderboard.length === 0) {
+                emptyLeaderboard.classList.remove('hidden');
+                return;
+            }
+
+            emptyLeaderboard.classList.add('hidden');
+
+            leaderboard.forEach((score, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition-colors';
+
+                let rankBadge = `<span class="font-bold text-slate-400">${index + 1}</span>`;
+                if (index === 0) rankBadge = `<i class="fa-solid fa-medal text-amber-400 text-base"></i>`;
+                else if (index === 1) rankBadge = `<i class="fa-solid fa-medal text-slate-300 text-base"></i>`;
+                else if (index === 2) rankBadge = `<i class="fa-solid fa-medal text-amber-600 text-base"></i>`;
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-2 font-digital">${rankBadge}</td>
+                    <td class="py-2.5 px-2 font-medium text-slate-200">${escapeHtml(score.name)}</td>
+                    <td class="py-2.5 px-2 text-right font-digital font-bold text-amber-300">${score.time} ms</td>
+                    <td class="py-2.5 px-2 text-right text-xs text-slate-400">${score.date}</td>
+                `;
+                leaderboardBody.appendChild(tr);
+            });
+        }
+
+        function clearLeaderboard() {
+            if (confirm('Voulez-vous supprimer tout le classement ?')) {
+                localStorage.removeItem('reaction_neon_scores');
+                renderLeaderboard();
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
