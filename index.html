@@ -125,7 +125,7 @@
                     1. Cliquez sur <strong class="text-emerald-400">C'EST PARTI !</strong>.<br>
                     2. Attendez le décompte <strong class="text-amber-400">3, 2, 1</strong>.<br>
                     3. Attendez durant le temps aléatoire (<strong class="text-amber-400">2 à 10 secondes</strong>).<br>
-                    4. Dès que l'écran devient <strong class="text-emerald-400 uppercase">VERT FLUO</strong>, cliquez au plus vite !
+                    4. Dès que l'écran devient <strong class="text-emerald-400 uppercase">VERT FLUO</strong>, cliquez ou appuyez sur <strong class="text-emerald-400">ESPACE</strong> !
                 </p>
             </div>
 
@@ -303,6 +303,24 @@
         const leaderboardBody = document.getElementById('leaderboardBody');
         const emptyLeaderboard = document.getElementById('emptyLeaderboard');
 
+        // GESTION DU CLAVIER (TOUCHE ESPACE)
+        window.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' || e.key === ' ') {
+                // Éviter le comportement par défaut (défilement de la page) si l'utilisateur n'est pas dans un champ texte
+                if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    
+                    const rect = reactionZone.getBoundingClientRect();
+                    const centerEvent = {
+                        clientX: rect.left + rect.width / 2,
+                        clientY: rect.top + rect.height / 2
+                    };
+                    
+                    handleZoneClick(centerEvent);
+                }
+            }
+        });
+
         /**
          * Réinitialise les minuteurs en cours
          */
@@ -469,7 +487,7 @@
          * Animation d'onde visuelle au clic
          */
         function createClickRipple(e) {
-            if (!e.clientX) return;
+            if (!e || e.clientX === undefined) return;
             const circle = document.createElement('div');
             circle.className = 'click-ripple';
             const rect = reactionZone.getBoundingClientRect();
