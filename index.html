@@ -79,16 +79,25 @@
     <!-- ARRIÈRE-PLAN AVEC GRILLE DÉCORATIVE CYBERPUNK -->
     <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
 
-    <!-- HAUT : BARRE NAVIGATION / ENTÊTE AVEC BOUTON RÉESSAYER PERMANENT -->
+    <!-- HAUT : BARRE NAVIGATION / ENTÊTE AVEC BOUTON RETOUR ARCADE ET RÉESSAYER -->
     <header class="relative z-30 w-full max-w-5xl mx-auto pt-4 px-4 sm:px-6 flex justify-between items-center">
-        <!-- Logo / Titre du jeu -->
-        <div class="flex items-center gap-2 sm:gap-3 cursor-pointer" onclick="goToMenu()">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-md">
-                <i class="fa-solid fa-bolt text-lg sm:text-xl"></i>
-            </div>
-            <div>
-                <h1 class="font-digital font-bold text-sm sm:text-base tracking-wider text-slate-100 uppercase leading-none">REACTION <span class="text-emerald-400">NEON</span></h1>
-                <span class="text-[10px] text-slate-400">Vitesse de réaction au 1/1000 ms</span>
+        <!-- Groupe gauche : Bouton Retour Arcade + Logo / Titre du jeu -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Bouton Retour à l'arcade -->
+            <a href="https://jojosarcade.vercel.app" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-slate-300 hover:text-emerald-400 text-xs sm:text-sm flex items-center gap-2 transition-colors" title="Retour à l'arcade">
+                <i class="fa-solid fa-arrow-left text-emerald-400"></i>
+                <span class="hidden sm:inline font-medium">Arcade</span>
+            </a>
+
+            <!-- Logo / Titre du jeu -->
+            <div class="flex items-center gap-2 sm:gap-3 cursor-pointer" onclick="goToMenu()">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-md">
+                    <i class="fa-solid fa-bolt text-lg sm:text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-digital font-bold text-sm sm:text-base tracking-wider text-slate-100 uppercase leading-none">REACTION <span class="text-emerald-400">NEON</span></h1>
+                    <span class="text-[10px] text-slate-400">Vitesse de réaction au 1/1000 ms</span>
+                </div>
             </div>
         </div>
 
