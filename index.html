@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reaction Neon</title>
-    <!-- Tailwind CSS pour le style et responsive -->
+    <title>Reaction Neon - Jeu de vitesse de réaction</title>
+    <!-- Tailwind CSS pour le style et le responsive design -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -76,19 +76,19 @@
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 flex flex-col justify-between relative overflow-hidden">
 
-    <!-- ARRIÈRE-PLAN AVEC GRILLE DÉCORATIVE -->
+    <!-- ARRIÈRE-PLAN AVEC GRILLE DÉCORATIVE CYBERPUNK -->
     <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
 
     <!-- HAUT : BARRE NAVIGATION / ENTÊTE AVEC BOUTON RÉESSAYER PERMANENT -->
     <header class="relative z-30 w-full max-w-5xl mx-auto pt-4 px-4 sm:px-6 flex justify-between items-center">
         <!-- Logo / Titre du jeu -->
         <div class="flex items-center gap-2 sm:gap-3 cursor-pointer" onclick="goToMenu()">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-md">
                 <i class="fa-solid fa-bolt text-lg sm:text-xl"></i>
             </div>
             <div>
                 <h1 class="font-digital font-bold text-sm sm:text-base tracking-wider text-slate-100 uppercase leading-none">REACTION <span class="text-emerald-400">NEON</span></h1>
-                <span class="text-[10px] text-slate-400">Test de vitesse réflexe</span>
+                <span class="text-[10px] text-slate-400">Vitesse de réaction au 1/1000 ms</span>
             </div>
         </div>
 
@@ -109,7 +109,7 @@
     </header>
 
     <!-- ZONE DE JEU PRINCIPALE DE RÉACTION -->
-    <main id="reactionZone" onclick="handleZoneClick(event)" class="relative flex-1 w-full h-full my-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 select-none overflow-hidden">
+    <main id="reactionZone" onclick="handleZoneClick(event)" class="relative flex-1 w-full h-full my-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden">
         
         <!-- ÉCRAN : MENU D'ACCUEIL -->
         <div id="screenMenu" class="z-20 text-center max-w-lg mx-auto p-6 bg-slate-900/90 rounded-3xl border border-slate-800 shadow-2xl neon-glow-green space-y-6">
@@ -122,9 +122,10 @@
                     TEST DE RÉFLEXE
                 </h2>
                 <p class="text-slate-300 text-sm leading-relaxed">
-                    1. Cliquez sur <strong class="text-emerald-400">COMMENCER</strong>.<br>
+                    1. Cliquez sur <strong class="text-emerald-400">C'EST PARTI !</strong>.<br>
                     2. Attendez le décompte <strong class="text-amber-400">3, 2, 1</strong>.<br>
-                    3. Dès que l'écran devient <strong class="text-emerald-400 uppercase">VERT FLUO</strong>, cliquez le plus vite possible !
+                    3. Attendez durant le temps aléatoire (<strong class="text-amber-400">2 à 10 secondes</strong>).<br>
+                    4. Dès que l'écran devient <strong class="text-emerald-400 uppercase">VERT FLUO</strong>, cliquez au plus vite !
                 </p>
             </div>
 
@@ -143,11 +144,12 @@
             <p class="text-slate-400 font-medium text-lg uppercase tracking-widest font-digital">Préparez-vous...</p>
         </div>
 
-        <!-- ÉCRAN : ATTENTE DU SIGNAL VERT (ROUGE / ROUGE SOMBRE) -->
+        <!-- ÉCRAN : ATTENTE DU SIGNAL VERT (2 À 10 SECONDES) -->
         <div id="screenWaiting" class="hidden z-20 text-center space-y-3 pointer-events-none">
             <i class="fa-solid fa-hourglass-half text-amber-400 text-5xl animate-spin"></i>
-            <h2 class="font-digital text-3xl sm:text-4xl font-bold text-slate-200">ATTENDEZ LE VERT...</h2>
-            <p class="text-slate-400 text-sm">Ne cliquez pas encore !</p>
+            <h2 class="font-digital text-3xl sm:text-4xl font-bold text-slate-200">ATTENTION...</h2>
+            <p class="text-amber-400/90 text-sm font-semibold tracking-wide">Attente aléatoire (2 à 10 secondes)</p>
+            <p class="text-slate-400 text-xs">Ne cliquez pas encore !</p>
         </div>
 
         <!-- ÉCRAN : SIGNAL VERT (SIGNAL DE CLIC) -->
@@ -164,7 +166,7 @@
             </div>
             <div class="space-y-1">
                 <h3 class="font-digital text-2xl font-bold text-rose-400 neon-text-red">FAUX DÉPART !</h3>
-                <p class="text-slate-300 text-sm">Vous avez cliqué trop tôt avant le signal vert.</p>
+                <p class="text-slate-300 text-sm">Vous avez cliqué trop tôt pendant la période d'attente (2-10s).</p>
             </div>
             <!-- BOUTON RÉESSAYER SUR L'ÉCRAN DE FAUX DÉPART -->
             <button onclick="startCountdown(event)" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white font-bold font-digital tracking-wider text-base shadow-lg transition-all transform hover:scale-105 active:scale-95">
@@ -172,12 +174,12 @@
             </button>
         </div>
 
-        <!-- ÉCRAN : RÉSULTAT DU TEMPS DE RÉACTION -->
+        <!-- ÉCRAN : RÉSULTAT DU TEMPS DE RÉACTION (HAUTE PRÉCISION) -->
         <div id="screenResult" class="hidden z-20 text-center max-w-md mx-auto p-6 sm:p-8 bg-slate-900/95 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
             <div class="space-y-1">
-                <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400 font-digital">Temps de Réaction</span>
-                <div id="reactionTimeDisplay" class="font-digital text-5xl sm:text-6xl font-black text-amber-300 neon-text-green">
-                    0 ms
+                <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400 font-digital">Temps de Réaction ultra-précis</span>
+                <div id="reactionTimeDisplay" class="font-digital text-4xl sm:text-5xl font-black text-amber-300 neon-text-green py-2">
+                    0.000 ms
                 </div>
                 <p id="performanceFeedback" class="text-xs text-slate-400 pt-1 font-medium"></p>
             </div>
@@ -204,7 +206,7 @@
 
     <!-- FOOTER INFORMATIONS ET ACCÈS CLASSEMENT -->
     <footer class="relative z-30 w-full max-w-5xl mx-auto pb-4 px-6 flex justify-between items-center text-xs text-slate-500">
-        <div>Reaction Neon • Chrono haute précision</div>
+        <div>Reaction Neon • Attente 2s à 10s • Précision 1/1000 ms</div>
         <div class="flex items-center gap-4">
             <button onclick="goToMenu()" class="hover:text-slate-300 transition-colors">Accueil</button>
             <button onclick="openLeaderboardModal()" class="hover:text-slate-300 transition-colors">Classement Top 100</button>
@@ -238,7 +240,7 @@
                             <th class="py-2 px-2">#</th>
                             <th class="py-2 px-2">Joueur</th>
                             <th class="py-2 px-2 text-right">Temps</th>
-                            <th class="py-2 px-2 text-right">Date</th>
+                            <th class="py-2 px-2 text-right">Date & Heure</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboardBody" class="divide-y divide-slate-800/50 text-sm">
@@ -266,7 +268,7 @@
 
     <!-- LOGIQUE JAVASCRIPT DU JEU -->
     <script>
-        // ETATS DU JEU
+        // ÉTATS DU JEU
         const STATE = {
             MENU: 'MENU',
             COUNTDOWN: 'COUNTDOWN',
@@ -281,9 +283,9 @@
         let countdownTimer = null;
         let greenDelayTimeout = null;
         let startTime = 0;
-        let lastReactionTimeMs = 0;
+        let lastReactionTimeMs = 0; // Nombre à virgule flottante pour haute précision
 
-        // ELEMENTS DOM
+        // ÉLÉMENTS DOM
         const reactionZone = document.getElementById('reactionZone');
         const screenMenu = document.getElementById('screenMenu');
         const screenCountdown = document.getElementById('screenCountdown');
@@ -302,7 +304,7 @@
         const emptyLeaderboard = document.getElementById('emptyLeaderboard');
 
         /**
-         * Réinitialise les timers en cours
+         * Réinitialise les minuteurs en cours
          */
         function clearAllTimers() {
             if (countdownTimer) {
@@ -328,7 +330,7 @@
         }
 
         /**
-         * Change le style de fond de la zone de jeu
+         * Ajuste le style de fond de la zone de jeu
          */
         function setZoneBackground(type) {
             reactionZone.className = "relative flex-1 w-full h-full my-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden ";
@@ -356,7 +358,7 @@
         }
 
         /**
-         * Lance / Relance la tentative avec le décompte 3, 2, 1
+         * Relance la partie avec le décompte 3, 2, 1
          * Accessible TOUT LE TEMPS via le bouton RÉESSAYER
          */
         function restartGame(e) {
@@ -390,7 +392,7 @@
         }
 
         /**
-         * Phase d'attente aléatoire avant le vert
+         * Phase d'attente aléatoire entre 2 et 10 secondes avant le vert
          */
         function startWaitingPhase() {
             currentState = STATE.WAITING;
@@ -398,8 +400,8 @@
             setZoneBackground('waiting');
             screenWaiting.classList.remove('hidden');
 
-            // Délai aléatoire entre 1.5s (1500ms) et 4s (4000ms)
-            const randomDelay = Math.floor(Math.random() * 2500) + 1500;
+            // Délai aléatoire entre 2.0s (2000ms) et 10.0s (10000ms)
+            const randomDelay = Math.floor(Math.random() * 8000) + 2000;
 
             greenDelayTimeout = setTimeout(() => {
                 triggerGreenSignal();
@@ -407,21 +409,20 @@
         }
 
         /**
-         * Déclenchement de l'écran vert de réaction
+         * Déclenchement du vert néon
          */
         function triggerGreenSignal() {
             currentState = STATE.READY;
-            startTime = performance.now(); // Précision haute définition millisecondes
+            startTime = performance.now(); // Temps haute précision (sub-millisecondes)
             hideAllScreens();
             setZoneBackground('green');
             screenGreen.classList.remove('hidden');
         }
 
         /**
-         * Gestion des clics sur la zone de jeu
+         * Gestion des clics dans la zone de jeu
          */
         function handleZoneClick(e) {
-            // Effet d'onde visuel au clic
             createClickRipple(e);
 
             if (currentState === STATE.WAITING) {
@@ -432,29 +433,30 @@
                 hideAllScreens();
                 screenEarly.classList.remove('hidden');
             } else if (currentState === STATE.READY) {
-                // Clic au bon moment ! Calcul de la vitesse
+                // Clic valide ! Mesure au 1/1000 de millisecondes
                 const endTime = performance.now();
-                lastReactionTimeMs = Math.round(endTime - startTime);
+                lastReactionTimeMs = endTime - startTime;
                 
                 currentState = STATE.RESULT;
                 setZoneBackground('default');
                 hideAllScreens();
                 
-                // Affichage du résultat
-                reactionTimeDisplay.textContent = `${lastReactionTimeMs} ms`;
+                // Formatage à 3 décimales (ex: 215.342 ms)
+                const formattedTime = lastReactionTimeMs.toFixed(3);
+                reactionTimeDisplay.textContent = `${formattedTime} ms`;
                 
-                // Commentaire selon la vitesse
+                // Commentaire indicatif
                 if (lastReactionTimeMs < 180) {
-                    performanceFeedback.textContent = "⚡ Réflexes de surhumain ! Incroyable !";
+                    performanceFeedback.textContent = "⚡ Vitesse réflexe surhumaine !";
                     performanceFeedback.className = "text-xs font-bold text-emerald-400";
                 } else if (lastReactionTimeMs < 250) {
-                    performanceFeedback.textContent = "🚀 Excellent temps ! Très rapide !";
+                    performanceFeedback.textContent = "🚀 Excellent réflexe ! Très rapide.";
                     performanceFeedback.className = "text-xs font-bold text-teal-300";
                 } else if (lastReactionTimeMs < 350) {
-                    performanceFeedback.textContent = "👍 Bon temps ! Dans la moyenne rapide.";
+                    performanceFeedback.textContent = "👍 Bon temps de réaction !";
                     performanceFeedback.className = "text-xs font-medium text-amber-300";
                 } else {
-                    performanceFeedback.textContent = "🐢 Un peu lent ! Vous pouvez faire mieux !";
+                    performanceFeedback.textContent = "🐢 Vous pouvez faire encore plus vite !";
                     performanceFeedback.className = "text-xs font-medium text-slate-400";
                 }
 
@@ -464,7 +466,7 @@
         }
 
         /**
-         * Animation d'onde au clic
+         * Animation d'onde visuelle au clic
          */
         function createClickRipple(e) {
             if (!e.clientX) return;
@@ -481,13 +483,12 @@
         }
 
         /**
-         * Sauvegarde du score dans LocalStorage
+         * Enregistrement du score dans LocalStorage avec Date et Heure automatiques
          */
         function saveScore(e) {
             e.preventDefault();
             const name = playerNameInput.value.trim() || 'Anonyme';
 
-            // Date & Heure automatique
             const now = new Date();
             const dateStr = now.toLocaleDateString('fr-FR', {
                 day: '2-digit',
@@ -499,17 +500,18 @@
 
             const scoreEntry = {
                 name: name,
-                time: lastReactionTimeMs,
+                time: lastReactionTimeMs.toFixed(3),
+                timeRaw: lastReactionTimeMs,
                 date: dateStr
             };
 
             let leaderboard = JSON.parse(localStorage.getItem('reaction_neon_scores') || '[]');
             leaderboard.push(scoreEntry);
 
-            // Tri par temps croissant (les plus rapides en premier)
-            leaderboard.sort((a, b) => a.time - b.time);
+            // Tri par vitesse croissante (les plus rapides en haut)
+            leaderboard.sort((a, b) => a.timeRaw - b.timeRaw);
 
-            // Conserver le Top 100
+            // Top 100 maximum
             leaderboard = leaderboard.slice(0, 100);
 
             localStorage.setItem('reaction_neon_scores', JSON.stringify(leaderboard));
@@ -519,7 +521,7 @@
         }
 
         /**
-         * Affichage du tableau des scores
+         * Gestion du modal classement
          */
         function openLeaderboardModal() {
             renderLeaderboard();
@@ -561,7 +563,7 @@
         }
 
         function clearLeaderboard() {
-            if (confirm('Voulez-vous supprimer tout le classement ?')) {
+            if (confirm('Voulez-vous réinitialiser le classement ?')) {
                 localStorage.removeItem('reaction_neon_scores');
                 renderLeaderboard();
             }
